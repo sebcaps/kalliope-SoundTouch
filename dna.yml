@@ -1,0 +1,9 @@
+name: "soudtouch"
+type: "neuron"
+author: "sebcaps"
+
+kalliope_supported_version:
+    - 0.6
+
+tags:
+    - "bose soundtouch"
