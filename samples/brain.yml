@@ -1,10 +1,34 @@
 ---
 
-   - name: "play"
+   - name: "switch_on"
      signal:
       - order: "allume la radio"
      neurons:
       - soundtouch:
-         sound_host: 192.168.0.11
-         sound_volume : 10
-         sound_preset : 3
+         host: 192.168.0.46
+         action: play
+
+   - name: "switch_on_by_name"
+     signal:
+      - order: "allume l'enceinte {{}}"
+     neurons:
+      - soundtouch:
+         name: {{}}
+         action: play
+
+   - name: "switch_off"
+     signal:
+      - order: "éteint l'enceinte cuisine"
+     neurons:
+      - soundtouch:
+         name: Cuisine
+         action: stop
+
+   - name: "s"
+     signal:
+      - order: "Met le son à {{}}"
+     neurons:
+      - soundtouch:
+         host: 192.168.0.46
+         action: set_volume
+         volume: {{}}
