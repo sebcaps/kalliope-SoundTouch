@@ -1,0 +1,10 @@
+---
+
+   - name: "play"
+     signal:
+      - order: "allume la radio"
+     neurons:
+      - soundtouch:
+         sound_host: 192.168.0.11
+         sound_volume : 10
+         sound_preset : 3
