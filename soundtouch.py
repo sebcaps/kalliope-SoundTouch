@@ -22,32 +22,21 @@ class Soundtouch(NeuronModule):
             "volume" : kwargs.get('volume', None),
             "preset" : kwargs.get('preset', 1)
         }
-        logger.debug("Will Init device..")
         self._initSoundTouch()
 
         if self._is_parameters_ok() and self.device:
             if self.configuration['action']=="play":
                 logger.debug("Turn on and play")
-                self._play_preset()
+                self._play()
             elif self.configuration['action']=="stop":
                 self._stop_device()
             elif self.configuration['action']=="set_volume":
                 self._set_volume()
-            elif self.configuration['action']=="increase_volume":
-                self_update_volume()
-            elif self.configuration['action']=="increase_volume":
-                self_update_volume()
+            elif self.configuration['action']=="mute":
+                self._mute()
+            elif self.configuration['action']=="set_preset":
+                self_set_preset()
 
-    def _findByName(self):
-        devices = discover_devices(timeout=5)
-        logger.debug("Searching device...")
-        logger.debug(devices)
-        for deviceDiscovered in devices:
-            logger.debug("Found device : "+deviceDiscovered.config.name)
-            if deviceDiscovered.config.name == self.configuration['name']:
-                logger.debug("Target device "+self.configuration['name']+" found")
-                return deviceDiscovered
-                break
 
     def _initSoundTouch(self):
 
@@ -67,18 +56,43 @@ class Soundtouch(NeuronModule):
             self.device=device
 
 
-    def _play_preset(self):
+    def _play(self):
         logger.debug("in _play_preset")
         self.device.power_on()
-    
+        if self.configuration['preset'] is not None:
+            self._set_preset()
+        if self.configuration['volume'] is not None:
+            self._set_volume()
+
+    def _findByName(self):
+        devices = discover_devices(timeout=5)
+        logger.debug("Searching device...")
+        logger.debug(devices)
+        for deviceDiscovered in devices:
+            logger.debug("Found device : "+deviceDiscovered.config.name)
+            if deviceDiscovered.config.name.lower() == self.configuration['name'].lower():
+                logger.debug("Target device "+self.configuration['name']+" found")
+                return deviceDiscovered
+                break
+
     def _stop_device(self):
         logger.debug("in _stop_device")
         self.device.power_off()
 
     def _set_volume(self):
-        logger.debug("in _set_volume")
+        logger.debug("in _set_volume, with volume value : "+ str(self.configuration['volume']))
         self.device.set_volume(self.configuration['volume'])
 
+    def _mute(self):
+        logger.debug("in _mute")
+        self.device.mute()
+    
+    def _set_preset(self):
+        logger.debug("in _set_preset with value : "+str(self.configuration['preset']))
+        pres = self.device.presets()[self.configuration['preset']-1]
+        logger.debug ('Set preset to :' +pres.name)
+        self.device.select_preset(pres)
+    
     def _is_parameters_ok(self):
         """
         Check if received parameters are ok to perform operations in the neuron
@@ -93,8 +107,10 @@ class Soundtouch(NeuronModule):
             raise InvalidParameterException("Soundtouch needs an action")
         if self.configuration['volume'] is not None and (self.configuration['volume'] <0  or self.configuration['volume'] >100 ):
             raise InvalidParameterException("Volume must be greater than 0 and lower than 100")
-        elif self.configuration['action'] not in ['play','stop','set_volume'] :
+        elif self.configuration['action'] not in ['play','stop','set_volume','mute','set_preset'] :
             raise InvalidParameterException("Soundtouch does not support action")
-
-
+        elif self.configuration['preset'] is not None and not(isinstance(self.configuration['preset'],int)):
+            raise InvalidParameterException("Preset must be set to an integer value")
+        elif self.configuration['preset'] <= 0 or self.configuration['preset'] > 6 :
+            raise InvalidParameterException("Preset must be greater than 0 and lower or equal to 6")
         return True
