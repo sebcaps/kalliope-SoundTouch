@@ -1,34 +1,68 @@
----
+- name: "allume"
+  signals:
+    - order: "Met le son"
+    - order: "mets le son"
+  neurons:
+    - say:
+        message: 
+          - "Je vais allumer l'enceinte"
+    - soundtouch:
+       host: 192.168.0.45
+       port : 8091
+       volume: 30
+       preset: 5
+       action: play
 
-   - name: "switch_on"
-     signal:
-      - order: "allume la radio"
-     neurons:
-      - soundtouch:
-         host: 192.168.0.46
-         action: play
+- name: "stop"
+  signals:
+  - order: "arrête l'enceinte"
+  neurons:
+    - soundtouch:
+        host: 192.168.0.45
+        action: stop
+    - say:
+      message: 
+       - "Je vais arrêter l'enceinte"
 
-   - name: "switch_on_by_name"
-     signal:
-      - order: "allume l'enceinte {{}}"
-     neurons:
-      - soundtouch:
-         name: {{}}
-         action: play
+- name: "son15"
+  signals:
+  - order: "Met le son à 15"
+  neurons:
+    - say:
+       message: 
+          - "Je met le son à 15"
+    - soundtouch:
+        host: 192.168.0.45
+        action: set_volume
+        volume: 15
 
-   - name: "switch_off"
-     signal:
-      - order: "éteint l'enceinte cuisine"
-     neurons:
-      - soundtouch:
-         name: Cuisine
-         action: stop
+- name: "preset"
+  signals:
+    - order: "sélection 3"
+  neurons:
+    - soundtouch:
+        host: 192.168.0.45
+        action: set_preset
+        preset: 3
 
-   - name: "s"
-     signal:
-      - order: "Met le son à {{}}"
-     neurons:
-      - soundtouch:
-         host: 192.168.0.46
-         action: set_volume
-         volume: {{}}
+- name: "mute"
+  signals:
+  - order: "coupe"
+  neurons:
+    - say:
+       message: 
+          - "Je coupe"
+    - soundtouch:
+        host: 192.168.0.45
+        action: mute
+
+- name: "deviceByName"
+  signals:
+  - order: "Allume {{ enceinte }}"
+  neurons:
+    - say:
+       message: 
+          - "J'allume l'enceinte {{ enceinte }}"
+    - soundtouch:
+        name: "{{ enceinte }}"
+        action: play

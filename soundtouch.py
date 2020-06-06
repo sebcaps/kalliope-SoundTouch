@@ -22,6 +22,7 @@ class Soundtouch(NeuronModule):
             "volume" : kwargs.get('volume', None),
             "preset" : kwargs.get('preset', 1)
         }
+
         self._initSoundTouch()
 
         if self._is_parameters_ok() and self.device:
@@ -35,11 +36,10 @@ class Soundtouch(NeuronModule):
             elif self.configuration['action']=="mute":
                 self._mute()
             elif self.configuration['action']=="set_preset":
-                self_set_preset()
+                self._set_preset()
 
 
     def _initSoundTouch(self):
-
         if (self.configuration['name']) is not None:
             logger.debug("Searching device with name : "+self.configuration['name'])
             device = self._findByName()
@@ -52,12 +52,12 @@ class Soundtouch(NeuronModule):
             logger.error('Device not found')
             raise RuntimeError("Device not found")
         else:
-            logger.debug("Got device "+ device.config.name)
+            logger.debug("Got device :"+ device.config.name)
             self.device=device
 
 
     def _play(self):
-        logger.debug("in _play_preset")
+        logger.debug("in _play")
         self.device.power_on()
         if self.configuration['preset'] is not None:
             self._set_preset()
