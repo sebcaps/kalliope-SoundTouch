@@ -1,11 +1,11 @@
-- name: Kalliope soudtouch neuron install
+- name: Kalliope soundtouch neuron install
   hosts: localhost
   gather_facts: no
   connection: local
   become: true
 
   tasks:
-  - name: "Install soudtouch pip dependencies"
+  - name: "Install soundtouch pip dependencies"
     pip:
       name: libsoundtouch
       version: 0.8.0
